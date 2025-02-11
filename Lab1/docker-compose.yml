@@ -1,0 +1,31 @@
+version: "3.7"
+
+services:
+  gitlab:
+    image: gitlab/gitlab-ce:latest
+    container_name: 21BS242-gitlab
+
+    restart: always
+    hostname: gitlab.test.local
+    ports:
+      - "22:22"
+      - "80:80"
+      - "443:443"
+
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url "https://gitlab.test.local"
+
+        nginx['ssl_certificate'] = "/etc/gitlab/ssl/gitlab.test.local.crt"
+        nginx['ssl_certificate_key'] = "/etc/gitlab/ssl/gitlab.test.local.key"
+
+        registry['enable'] = false
+        mattermost['enable'] = false
+        gitlab_pages['enable'] = false
+        gitlab_kas['enable'] = false
+
+    volumes:
+      - "$GITLAB_HOME/config:/etc/gitlab"
+      - "$GITLAB_HOME/data:/var/opt/gitlab"
+      - "$GITLAB_HOME/logs:/var/log/gitlab"
+      - "$GITLAB_HOME/ssl:/etc/gitlab/ssl"

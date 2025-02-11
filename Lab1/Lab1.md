@@ -1,8 +1,11 @@
-# GitLab SAST
+# Assignment 1
 
 ## GitLab Server
-### Setting up a GitLab server:
+
+### Setting up a GitLab server
+
 - Pulling the GitLab image and naming it:
+
     ```yml
     version: '3.7'
 
@@ -11,29 +14,34 @@
         image: gitlab/gitlab-ce:latest
         container_name: 21BS242-gitlab
     ```
+
 - Mapping the ports:
+
     ```yml
     ports:
       - "80:80" # Http requests port
       - "22:22" # SSH requests port
       - "443:443" # Https requests port
     ```
+
 - Exposing the GitLab server:
+
     ```yml
     hostname: gitlab.test.local
     ```
+
     ```yml
     environment:
       GITLAB_OMNIBUS_CONFIG: |
         external_url "https://gitlab.test.local"
     ```
+
     we used `https` because we're gonna enable secure access later
-    - **Resolving the `DNS` record:**
+  - **Resolving the `DNS` record:**
 
-        This can be done by editing the `/etc/hosts` file
+    This can be done by editing the `/etc/hosts` file
 
-        ![hosts](/src/hosts.png)
-
+    ![hosts](/src/hosts.png)
 
     - **Enable HTTPS access:**
 
@@ -43,6 +51,7 @@
         Now all we have to do is copy these files to the `GITLAB_HOME` that we are using in our docker compose file.
 
         Now we configure the environment to use SSL and use the files we generated:
+
         ```yml
         environment:
             GITLAB_OMNIBUS_CONFIG: |
@@ -51,7 +60,9 @@
                 nginx['ssl_certificate'] = "/etc/gitlab/ssl/gitlab.test.local.crt"
                 nginx['ssl_certificate_key'] = "/etc/gitlab/ssl/gitlab.test.local.key"
         ```
+
 - Binding the necessary directories:
+
     ```yml
         volumes:
       - '$GITLAB_HOME/config:/etc/gitlab'
@@ -59,13 +70,17 @@
       - '$GITLAB_HOME/logs:/var/log/gitlab'
       - '$GITLAB_HOME/ssl:/etc/gitlab/ssl'
     ```
+
     The `$GITLAB_HOME` is an environment variable set on the loacl machine
+
     ```bash
     export GITLAB_HOME=/srv/gitlab
     ```
+
 - Disabling unneeded services:
 
     This can be done by configuring the environment to disable the unwanted services:
+
     ```yml
     environment:
       GITLAB_OMNIBUS_CONFIG: |
@@ -77,11 +92,13 @@
         gitlab_pages['enable'] = false
         gitlab_kas['enable'] = false
     ```
+
     References:
-    - [Pre-configure Docker container](https://docs.gitlab.com/ee/install/docker/configuration.html#pre-configure-docker-container)
+  - [Pre-configure Docker container](https://docs.gitlab.com/ee/install/docker/configuration.html#pre-configure-docker-container)
     - [Linux package template](https://gitlab.com/gitlab-org/omnibus-gitlab/blob/master/files/gitlab-config-template/gitlab.rb.template)
 
-### Running the docker-compose file:
+### Running the docker-compose file
+
 We run the command `docker-compose up -d`:
 
 ![compose-up](/src/compose-up.png)
@@ -92,12 +109,15 @@ Then we check if the image is running by running the command `docker ps`:
 And now we can open GitLab by visiting `https://gitlab.test.local` on the browser:
 ![gitlab-login](/src/gitlab-login.png)
 
-### Creating an empty repository:
+### Creating an empty repository
+
 In order to be able to create a new repository we first have to sign in.\
 We can sign in as the root user and to get the password we run the command:
+
 ```bash
 docker exec -it [image-name] grep 'Password:' /etc/gitlab/initial_root_password
 ```
+
 ![login](/src/login.png)
 
 Now we have access to the root account and we can create a new project
@@ -107,13 +127,15 @@ Now we have access to the root account and we can create a new project
 Reference: [Install GitLab in a Docker container](https://docs.gitlab.com/ee/install/docker/installation.html#install-gitlab-by-using-docker-engine)
 
 ## GitLab Runner
-### Setting up the GitLab runner:
+
+### Setting up the GitLab runner
+
 - **GitLab Runner Executor:** gitlab runner executor is the way gitlab runner works to execute jobs in a pipeline
 
 - **Downloading the GitLab Runner:** We get the runner by following the installation steps on their page: [Install GitLab Runner](https://docs.gitlab.com/runner/install/)
 
 - **Registering the GitLab Runner:**
-    - We first create a new runner instance on GitLab, making sure to give it the appropriate name tag
+  - We first create a new runner instance on GitLab, making sure to give it the appropriate name tag
     - We follow the steps on the page to register it, setting the executor to `shell`:
 
         ![register](/src/runner-register.png)
@@ -125,13 +147,17 @@ Reference: [Install GitLab in a Docker container](https://docs.gitlab.com/ee/ins
         ![success](/src/successful-runner.png)
 
 ## GitLab SAST
-### Choosing a vulnerable app:
+
+### Choosing a vulnerable app
+
 I decided to work with [DVWA](https://github.com/digininja/DVWA) and cloned the repository by running:
+
 ```bash
 git clone https://github.com/digininja/DVWA.git
 ```
 
-### Removing the `.git` file and pushing the repository to the local GitLab server:
+### Removing the `.git` file and pushing the repository to the local GitLab server
+
 - I deleted the `.git` file as follow:
 
     ![delete-git](/src/remove-git.png)
@@ -139,8 +165,10 @@ git clone https://github.com/digininja/DVWA.git
 - Pushing the repository:\
     I first moved the content of the DVWA to my working directory and then pushed the changes to the GitLab server, following the instructions provided by GitLab
 
-### Adding the `.gitlab-ci.yml` file:
+### Adding the `.gitlab-ci.yml` file
+
 After removing the `.github` folder form the repository, I created the `.gitlab-ci.yml` to start working on the CI
+
 ```yml
 stages:
 - scan # Define the scaning stage
@@ -154,12 +182,14 @@ semgrep: # Start a job called semgrep inside the scan stage
         - findings.json # Save the findings generated by the scan as an artifact
 ```
 
-### Testing the CI:
+### Testing the CI
+
 After pushing the changes to the main branch, the CI created started working and it passed, generating a report as an artifact
     ![semgrep-scan](/src/semgrep-scan.png)
     ![artifact](/src/artifact.png)
 
-### Scan report and findings:
+### Scan report and findings
+
 - We can check the findings by downloading the generated artifact and checking it, or by checking our semgrep account where we will find the findings there
 
     ![scan-results](/src/scan-results.png)
@@ -170,7 +200,7 @@ After pushing the changes to the main branch, the CI created started working and
 
      How to mitigate it:
 
-    - **Validate Input:**
+  - **Validate Input:**
     Only accept expected input (e.g., IP addresses) using validation functions like `filter_var()` for IP validation.
     - **Escape Input:**
     Use `escapeshellarg()` and `escapeshellcmd()` to properly escape user input before passing it to system commands.

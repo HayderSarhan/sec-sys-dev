@@ -41,12 +41,12 @@
 
     This can be done by editing the `/etc/hosts` file
 
-    ![hosts](/src/hosts.png)
+    ![hosts](src/hosts.png)
 
     - **Enable HTTPS access:**
 
         First we generating the certificate for `gitlab.test.local`
-        ![certificate](/src/gitlab-cert.png)
+        ![certificate](src/gitlab-cert.png)
         This will generate two files holding the certificate and the privet key \
         Now all we have to do is copy these files to the `GITLAB_HOME` that we are using in our docker compose file.
 
@@ -101,13 +101,13 @@
 
 We run the command `docker-compose up -d`:
 
-![compose-up](/src/compose-up.png)
+![compose-up](src/compose-up.png)
 
 Then we check if the image is running by running the command `docker ps`:
-![run-check](/src/check.png)
+![run-check](src/check.png)
 
 And now we can open GitLab by visiting `https://gitlab.test.local` on the browser:
-![gitlab-login](/src/gitlab-login.png)
+![gitlab-login](src/gitlab-login.png)
 
 ### Creating an empty repository
 
@@ -118,11 +118,11 @@ We can sign in as the root user and to get the password we run the command:
 docker exec -it [image-name] grep 'Password:' /etc/gitlab/initial_root_password
 ```
 
-![login](/src/login.png)
+![login](src/login.png)
 
 Now we have access to the root account and we can create a new project
-![main-page](/src/main-page.png)
-![new-repo](/src/new-repo.png)
+![main-page](src/main-page.png)
+![new-repo](src/new-repo.png)
 
 Reference: [Install GitLab in a Docker container](https://docs.gitlab.com/ee/install/docker/installation.html#install-gitlab-by-using-docker-engine)
 
@@ -138,13 +138,13 @@ Reference: [Install GitLab in a Docker container](https://docs.gitlab.com/ee/ins
   - We first create a new runner instance on GitLab, making sure to give it the appropriate name tag
     - We follow the steps on the page to register it, setting the executor to `shell`:
 
-        ![register](/src/runner-register.png)
+        ![register](src/runner-register.png)
 
     - We run the gitlab runner:
 
-        ![run](/src/run-runner.png)
+        ![run](src/run-runner.png)
 
-        ![success](/src/successful-runner.png)
+        ![success](src/successful-runner.png)
 
 ## GitLab SAST
 
@@ -160,7 +160,7 @@ git clone https://github.com/digininja/DVWA.git
 
 - I deleted the `.git` file as follow:
 
-    ![delete-git](/src/remove-git.png)
+    ![delete-git](src/remove-git.png)
 
 - Pushing the repository:\
     I first moved the content of the DVWA to my working directory and then pushed the changes to the GitLab server, following the instructions provided by GitLab
@@ -185,14 +185,14 @@ semgrep: # Start a job called semgrep inside the scan stage
 ### Testing the CI
 
 After pushing the changes to the main branch, the CI created started working and it passed, generating a report as an artifact
-    ![semgrep-scan](/src/semgrep-scan.png)
-    ![artifact](/src/artifact.png)
+    ![semgrep-scan](src/semgrep-scan.png)
+    ![artifact](src/artifact.png)
 
 ### Scan report and findings
 
 - We can check the findings by downloading the generated artifact and checking it, or by checking our semgrep account where we will find the findings there
 
-    ![scan-results](/src/scan-results.png)
+    ![scan-results](src/scan-results.png)
 
 - **Findings:**\
     [CWE-78: OS Command Injection](https://cwe.mitre.org/data/definitions/78.html):\

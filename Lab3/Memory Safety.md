@@ -1,6 +1,6 @@
 ## Programs Analysis
 
-All the code for the programs used for this lab are on my [GitHub]()
+All the code for the programs used for this lab are on my [GitHub](https://github.com/HayderSarhan/sec-sys-dev/tree/main/Lab3)
 
 ### Installing tools
 
@@ -454,7 +454,7 @@ In `HashIndex()`:
 	```
 
 ### Implementing improvements
-The implementation for the code can be found in the repository [Link]().
+The implementation for the code can be found in the repository [Link](https://github.com/HayderSarhan/sec-sys-dev/blob/main/Lab3/hash/hash.c).
 
 ### Report
 

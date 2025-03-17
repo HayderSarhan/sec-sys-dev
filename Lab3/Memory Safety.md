@@ -23,7 +23,9 @@ All the code for the programs used for this lab are on my [GitHub](https://githu
 	- `-O0`: Reduce compilation time and make debugging produce the expected results.
 
 - **Running the program**
-	![running program 1](runningP1.png)
+
+	![running program 1](src/runningP1.png)
+
 	The output seems to be normal
 - **Running the program with `valgrind`**
 	```bash
@@ -150,8 +152,9 @@ All the code for the programs used for this lab are on my [GitHub](https://githu
 		- [CWE-416: Use After Free](https://cwe.mitre.org/data/definitions/416.html)
 		- [CWE-125: Out-of-bounds Read](https://cwe.mitre.org/data/definitions/125.html).
 - **Fixes & Verification**
-	Upon examining the code and the report more, we notice that we are freeing the pointer `arr` inside of the function `work()` and then we are trying to access it inside of after `work()` finishes execution. 
+	Upon examining the code and the report more, we notice that we are freeing the pointer `arr` inside of the function `work()` and then we are trying to access it inside of after `work()` finishes execution.\
 	To solve such problem we just have to move the `free()` to a proper place.
+
 	![output after fix](src/fixedP2.png)
 
 	```bash
@@ -214,8 +217,8 @@ All the code for the programs used for this lab are on my [GitHub](https://githu
 - **Explaining the output**
 	The output show that there have been a memory leak in the program, since we had 2 allocations and only one of them got freed. This is a  [CWE-401: Missing Release of Memory after Effective Lifetime](https://cwe.mitre.org/data/definitions/401.html).
 - **Fixes & Verification**
-	From the report we can see that there have been 2 allocations, one inside the function `program3()` and the other inside `main()`. If we look closely we can notice that inside of the `if-statment` in `program3()` we are assigning a `Null` value to our pointer, before we free it, making it impossible for us to gain access to the old address, and causing a memory leak. 
-	To avoid that we should change it to `(arr == NULL)`. 
+	From the report we can see that there have been 2 allocations, one inside the function `program3()` and the other inside `main()`. If we look closely we can notice that inside of the `if-statment` in `program3()` we are assigning a `Null` value to our pointer, before we free it, making it impossible for us to gain access to the old address, and causing a memory leak.\
+	To avoid that we should change it to `(arr == NULL)`.\
 	The same applies  if the condition inside the `program3()` function is met, we will face the same problem since we are returning `NULL` and assigning it to the `arr` in `main()`. That's why we have to make sure that we free the pointer before returning `NULL`
 	```bash
 	$ valgrind --leak-check=yes ./program3

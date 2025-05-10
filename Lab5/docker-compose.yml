@@ -1,0 +1,23 @@
+networks:
+  web-app-firewall:
+
+services:
+  app:
+    image: "bkimminich/juice-shop"
+    container_name: "juice-shop"
+    ports:
+      - "3000:3000"
+    networks:
+      - web-app-firewall
+
+  waf:
+    image: "owasp/modsecurity-crs:nginx"
+    container_name: "CRS"
+    ports:
+      - "8080:8080"
+    environment:
+      - BACKEND=http://app:3000
+    volumes:
+      - ./patch-SQLi.conf:/etc/modsecurity.d/owasp-crs/rules/patch-SQLi.conf
+    networks:
+      - web-app-firewall
